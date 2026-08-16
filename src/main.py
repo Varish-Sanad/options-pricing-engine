@@ -1,6 +1,7 @@
 from black_scholes import call_price, put_price
 from greeks import delta, gamma, vega, theta, rho, delta_fd, gamma_fd, vega_fd, theta_fd, rho_fd
 from monte_carlo import mc_call_price, mc_put_price
+from implied_vol import implied_volatility
 
 S, K, T, r, sigma = 42, 40, 0.5, 0.10, 0.20
 
@@ -31,3 +32,9 @@ for n in [1_000, 10_000, 100_000, 1_000_000]:
         f"N={n:>9,}  plain={plain:.4f} +/- {plain_se:.4f}   "
         f"antithetic={anti:.4f} +/- {anti_se:.4f}   (BS={bs_call:.4f})"
     )
+
+print("\n--- Implied volatility: recovering sigma from a market price ---")
+for true_sigma in [0.05, 0.20, 0.80]:
+    market_price = call_price(S, K, T, r, true_sigma)
+    recovered = implied_volatility(market_price, S, K, T, r, "call")
+    print(f"true sigma={true_sigma:.2f}  ->  market price={market_price:.4f}  ->  recovered sigma={recovered:.6f}")
